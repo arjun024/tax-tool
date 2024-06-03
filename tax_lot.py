@@ -136,7 +136,10 @@ def calc_espp_cost_base(lot, force_qualifying_disposition):
         # gain can be determined only after lot avgo shares are sold. For all existing espp lots, the bargain
         # element is 15% of offer day price unless future sold avgo share price is lower than $600 per share,
         # in which case, we need to replace VMW_FMV_AFTER_MERGE to avgo sold price
-        gain = VMW_FMV_AFTER_MERGE - lot["purchase_price"]
+
+        # Arjun's change
+        # gain = VMW_FMV_AFTER_MERGE - lot["purchase_price"]
+        gain = get_stock_price(lot["sold_date"]) - lot["purchase_price"]
 
         ordinary_income = max(min(offer_date_discount, gain), 0)
     else:
