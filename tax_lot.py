@@ -142,6 +142,13 @@ def calc_espp_cost_base(lot, force_qualifying_disposition):
         gain = get_stock_price(lot["sold_date"]) - lot["purchase_price"]
 
         ordinary_income = max(min(offer_date_discount, gain), 0)
+
+        print("\nESPP:-----------------------")
+        print("ESPP: ", lot["share"], " VMW")
+        print("ESPP: discount based on Grant date FMV: ", offer_date_discount)
+        print("ESPP: Sold price: ", get_stock_price(lot["sold_date"]))
+        print("ESPP: Purch price: ", lot["purchase_price"])
+        print("ESPP: pay OIT on: ", ordinary_income)
     else:
         lot["qualifying_disposition"] = False
         ordinary_income = lot["acquire_date_fmv"] - lot["purchase_price"]
@@ -149,6 +156,7 @@ def calc_espp_cost_base(lot, force_qualifying_disposition):
     lot["ordinary_income"] = ordinary_income
     lot["total_ordinary_income"] = lot["ordinary_income"] * lot["share"]
     lot["cost_base"] = lot["purchase_price"]
+    print("ESPP: CB: ", lot["cost_base"])
 
     return lot
 
@@ -179,8 +187,12 @@ def adjust_special_dividend(lot):
     delta2021 = dividend_date_2021 - acquire_date
 
     if delta2018.days > 0:
+        print("triggering 2018 cost basis correction")
+        print("new cost_base = ", cost_base, " - ", DIVIDEND_2018_COST_BASE_REDUCTION)
         lot["cost_base"] = cost_base - DIVIDEND_2018_COST_BASE_REDUCTION
     elif delta2021.days > 0:
+        print("triggering 2021 cost basis correction")
+        print("new cost_base = ", cost_base, " - ", DIVIDEND_2021_COST_BASE_REDUCTION)
         lot["cost_base"] = cost_base - DIVIDEND_2021_COST_BASE_REDUCTION
 
 
@@ -213,6 +225,7 @@ def calc_merge_tax_and_avgo_cost_base(lot):
 # calc tax for lot sold before merge
 def calc_not_merged_tax(lot):
     lot["filing_cost_base"] = lot["cost_base"] * lot["share"] + lot["total_ordinary_income"]
+    print("filing_cost_base = ", lot["cost_base"], " * ", lot["share"], " + ", lot["total_ordinary_income"], " = ", lot["filing_cost_base"])
     lot["total_capital_gain"] = lot["total_proceeds"] - lot["filing_cost_base"]
 
 
